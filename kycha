@@ -1,0 +1,387 @@
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+struct List {
+    char field;
+    struct List *ptr;
+};
+struct Queue {
+    struct List *first, *last;
+};
+int input_Number(int*);
+void initQ(struct Queue*);
+int isemptyQ(struct Queue*);
+struct List *init_Char(char);
+void pushQ(struct Queue*, char);
+char viewQ(struct Queue*);
+void Queue();
+//////////////////////////////////
+
+struct Node {
+    char symbol;
+    struct Node *prev, *next;
+};
+struct Deque {
+    struct Node *front, *back;
+};
+void initD(struct Deque*);
+void pushD_front(struct Deque *, char);
+void pushD_back(struct Deque *, char);
+char popD_front(struct Deque *);
+char popD_back(struct Deque *);
+void freeD(struct Deque *);
+void Deque();
+
+char* input_string();
+char* viewQS(struct QueueStrins *); 
+void Namein_Queue();
+
+#endif
+
+///////////////////////////
+
+int input_Number(int* number) {
+    rewind(stdin);
+    *number = 0;
+    int digit, sign = 1, started = 0;
+    while ((digit = getchar()) != '\n' && digit != ' ') {
+        if (digit == '-') {
+            sign = -1;
+        } else if (digit < '0' || digit > '9') {
+            printf("Incorrect number\n");
+            while ((digit = getchar()) != '\n' && digit != ' ');
+            *number = 0;
+            return -1;
+        } else {
+            started = 1;
+            *number = *number * 10 + (digit - '0');
+        }
+    }
+   return started ? *number * sign : 0;
+}
+void initQ(struct Queue *q){
+    q->first = 0;
+    q->last = 0;
+}
+int isemptyQ(struct Queue *q){
+    if(q->first == 0){
+        return 1;
+    } 
+    else return 0;
+}
+struct List *init_Char(char x){
+    struct List *tmp;
+    tmp = (struct List*)malloc(sizeof(struct List));
+    tmp->field = x;
+    tmp->ptr = NULL;
+    return (tmp);
+}
+void pushQ(struct Queue *q, char x){
+    if((q->first == 0) && (q->last == 0)){
+        q->last = init_Char(x);
+        q->first = q->last;
+    }
+}
+char viewQ(struct Queue *q){
+    int x = q->first->field;
+    return x;
+}
+
+////////////////////
+
+void initD(struct Deque *dq) {
+    dq->back = NULL;
+    dq->front = NULL;
+}
+void pushD_front(struct Deque *dq, char x) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    newNode->symbol = x;
+    newNode->next = dq->front;
+    newNode->prev = NULL;
+
+    if(dq->front != NULL) {
+        dq->front->prev = newNode;
+    } 
+    else {
+        dq->back = newNode;
+    }
+    dq->front = newNode;
+}
+void pushD_back(struct Deque *dq, char x) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    newNode->symbol = x;
+    newNode->prev = dq->back;
+    newNode->next = NULL;
+
+    if(dq->back != NULL) {
+        dq->back->next = newNode;
+    } 
+    else {
+        dq->front = newNode;
+    }
+    dq->back = newNode;
+}
+char popD_front(struct Deque *dq) {
+    if(dq->front == NULL) {
+        return -1;
+    }
+    struct Node *tmp = dq->front;
+    char value = tmp->symbol;
+    dq->front = dq->back->next;
+    if(dq->front != NULL) {
+        dq->front->prev = NULL;
+    }
+    else {
+        dq->back = NULL;
+    }
+    free(tmp);
+    return value;
+}
+char popD_back(struct Deque *dq) {
+    if(dq->back == NULL) {
+        return -1;
+    }
+    struct Node *tmp = dq->back;
+    char value = tmp->symbol;
+    dq->back = dq->front->prev;
+    if(dq->back != NULL) {
+        dq->back->next = NULL;
+    }
+    else {
+        dq->front = NULL;
+    }
+    free(tmp);
+    return value;
+}
+void freeD(struct Deque *dq) {
+    while(dq->front != NULL) {
+        popD_front(dq);
+    }
+    free(dq);
+}
+
+////////////////////
+
+struct ListString {
+    char *field;
+    struct ListString *ptr;
+};
+struct QueueString {
+    struct ListString *first, *last;
+};
+char* input_string(int* len_str) {
+    *len_str = 0;
+    int capacity = 1; 
+    char* s = (char*)malloc(capacity * sizeof(char)); 
+
+    char c = getchar(); 
+
+    while ((c = getchar()) != '\n') {
+        if (*len_str + 1 >= capacity) {
+            capacity *= 2;
+            s = realloc(s, capacity * sizeof(char));
+        }
+
+        s[(*len_str)++] = c;
+    }
+    s[(*len_str)] = '\0';
+
+    return s;
+}
+struct ListString *init_CharString(char* x){
+    struct ListString *tmp;
+    tmp = (struct ListString*)malloc(sizeof(struct ListString));
+        while(x != ' ' || x != '\0') {
+            tmp->field = x;
+        }
+    tmp->ptr = NULL;
+    return (tmp);
+}
+void pushQS(struct QueueString *q, char* x){
+    if((q->first == 0) && (q->last == 0)){
+        q->last = init_CharString(x);
+        q->first = q->last;
+    }
+}
+char* viewQS(struct QueueStrins *q){
+    char* s = q->first->field;
+    return s;
+}
+
+/////////////////////////
+
+void Queue(){
+    struct Queue *Queue;
+    int number = 0;
+    initQ(Queue);
+    while(number <= 0) {
+        puts("Please, enter the amout of the elements for Queue: ");
+        if(input_Number(&number) < 0) {
+            puts("You need to enter the namber > 0.\n Try again.");
+            continue;
+        }
+    }
+    for(int i = 0; i < number; ++i) {
+        char x;
+        char reapet_x;
+        int flag = 0;
+        printf("Enter %d elements: ", (i + 1));
+        if(!isemptyQ(Queue)) {
+            scanf("%c", &x);
+            pushQ(Queue, x);
+            reapet_x = x;
+            if(x == reapet_x && flag != 0) {
+                for(int j = 0; j < i; ++j) {
+                    puts("Elements from Queue:");
+                    printf("The (%d)'s - %c", j + 1, viewQ(Queue));
+                }
+                printf("Queue size is %d", i);
+                break;
+            }
+            flag++;
+        }
+    }
+    int i = 0;
+    while(Queue != 0) {
+        puts("Elements from Queue:");
+        printf("The %d's - %c", i + 1, viewQ(Queue));
+        i++;
+    }
+}
+
+void Deque(){    
+    struct Deque *Deque;
+    int number = 0;
+    initD(Deque);
+    while(number <= 0) {
+        puts("Please, enter the amout of the elements for Queue: ");
+        if(input_Number(&number) < 0) {
+            puts("You need to enter the namber > 0.\n Try again.");
+            continue;
+        }
+    }
+    int flag = 0;
+    do {
+        printf("How do you want to write the elements?\n");
+        printf("1. Add to front;\n");
+        printf("2. Add to end;\n");
+        printf("3. Select element placement each time;\n");
+        char option;
+        scanf("%c", &option);
+
+        switch(option)
+        {
+            case '1':
+                for(int i = 0; i < number; ++i) {
+                    char x, reapet_x, back_x;
+                    scanf("%c", &x);
+                    if(i == 0) {
+                        back_x = x;
+                    }
+                    if(i != 0 && (reapet_x == x || back_x == x)) {
+                        for(int j = 0; j < i; ++j) {
+                            puts("Elements from Deque:");
+                            printf("The %d's - %c", j + 1, popD_front(Deque));
+                        }
+                        printf("Deque size is %d", i);
+                        break;
+                    }
+                    pushD_front(Deque, x); 
+                    reapet_x = x; 
+                }
+                break;
+            case '2':
+                for(int i = 0; i < number; ++i) {
+                    char x, reapet_x, front_x;
+                    scanf("%c", &x);
+                    if(i == 0) {
+                        front_x = x;
+                    }
+                    if(i != 0 && (reapet_x == x || front_x == x)) {
+                        for(int j = 0; j < i; ++j) {
+                            puts("Elements from Deque:");
+                            printf("The %d's - %c", j + 1, popD_front(Deque));
+                        }
+                        printf("Deque size is %d", i);
+                        break;
+                    }
+                    pushD_back(Deque, x);
+                    reapet_x = x; 
+                }   
+                break;
+            case '3':
+            for(int i = 0; i < number; ++i) {
+                char x;
+                int push;
+                printf("Push to front - 0, back - 1: \n");
+                scanf("%d", &push);
+                if(push == '0') {
+                    printf("Enter element: ");
+                    scanf("%c", &x);
+                    pushD_front(Deque, x); 
+                } 
+                else if(push == '1') {
+                    printf("Enter element: ");
+                    scanf("%c", &x);
+                    pushD_back(Deque, x);
+                }
+                else {
+                    printf("Oh! There is no this choice, try again.\n");
+                    i--;
+                    continue;
+                }
+            }
+                break;
+            default:
+                printf("Oh! There is no this choice, try again.\n");
+                flag = -1;
+                break;
+        }
+    } while (flag == -1);
+    
+    do {
+        printf("Watch Deque from the beginning - 0, from the end - 1: ");
+        scanf("%d", &flag);
+        if(flag = '0'){
+            for(int i = 0; i < number; ++i) {
+                printf("Elements %d: %c", i + 1, popD_front(Deque));
+            }
+        }
+        else if(flag = '1') {
+            for(int i = 0; i < number; ++i) {
+                printf("Elements %d: %c", --number, popD_back(Deque));
+            }
+        }
+        else {
+            printf("Oh! There is no this choice, try again.\n");
+            flag = -1;
+        }
+    } while(flag == -1);
+}
+
+void Namein_Queue() {
+    struct QueueString *Queue;
+    int len_str;
+    char* string = input_string(&len_str);
+    for(int i = 0; i < len_str; ++i) {
+        if(string[i] >= 'A' || string[i] <= 'Z') {
+            if(!isemptyQ(Queue)) {
+                pushQS(Queue, &string[i]);
+            }
+        } 
+        else {
+            printf("There are no names in the line.\n");
+            return;
+        }
+    }
+    int i = 0;
+    while(Queue != 0) {
+        puts("Elements from Queue:");
+        printf("The %d's - %s", i + 1, viewQS(Queue));
+        i++;
+    }
+}
